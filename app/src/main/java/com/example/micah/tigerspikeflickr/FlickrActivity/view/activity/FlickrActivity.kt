@@ -6,15 +6,21 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v7.app.AppCompatActivity
-import com.example.micah.tigerspikeflickr.FlickrActivity.view.tabs.DetailedImagesRVAdapter
-import com.example.micah.tigerspikeflickr.FlickrActivity.view.tabs.DetailsFragmentTab
+import com.example.micah.rxRecyclerViewArrayListAdaper.RxRecyclerViewArrayList
+import com.example.micah.tigerspikeflickr.EventType
+import com.example.micah.tigerspikeflickr.FlickrActivity.view.tabs.DetailedImagesRxRvAdapter
+import com.example.micah.tigerspikeflickr.FlickrActivity.view.tabs.FlickrFragment
+import com.example.micah.tigerspikeflickr.FlickrActivity.view.tabs.FlickrImagesAdapter
 import com.example.micah.tigerspikeflickr.GlobalModels.api.ApiHelper
 import com.example.micah.tigerspikeflickr.R
+import com.example.micah.tigerspikeflickr.RxBus
 import com.example.micah.tigerspikeflickr.dagger.DaggerInjector
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
@@ -22,8 +28,8 @@ import javax.inject.Inject
 class FlickrActivity : AppCompatActivity(), FlickrActivityDelegate {
 
     @Inject lateinit var presenter: FlickrPresenter
-    private lateinit var detailedImagesAdapter: DetailedImagesRVAdapter
     private lateinit var flickrTabsAdapter: FlickrTabsAdapter
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +46,7 @@ class FlickrActivity : AppCompatActivity(), FlickrActivityDelegate {
 
     private fun initRVAdapters() {
 
-        detailedImagesAdapter = DetailedImagesRVAdapter(ArrayList<FlickrModel>())
+//        detailedImagesAdapter = DetailedImagesRVAdapter(ArrayList<FlickrModel>())
     }
 
     //MARK: -------- INITIALISATION
@@ -50,9 +56,12 @@ class FlickrActivity : AppCompatActivity(), FlickrActivityDelegate {
      */
     private fun initFlickrTabsAdapter() {
 
-        val tabsTitlesArray = arrayOf(getString(R.string.details_tab), getString(R.string.details_tab))
+        val tabsTitlesArray = arrayOf(getString(R.string.details_tab), getString(R.string.more_of_tag))
 
-        flickrTabsAdapter = FlickrTabsAdapter(supportFragmentManager, tabsTitlesArray , detailedImagesAdapter)
+        flickrTabsAdapter = FlickrTabsAdapter(
+                                supportFragmentManager,
+                                tabsTitlesArray ,
+                                DetailedImagesRxRvAdapter(presenter.imagesRxArrayList, compositeDisposable))
     }
 
     /**
@@ -72,7 +81,7 @@ class FlickrActivity : AppCompatActivity(), FlickrActivityDelegate {
      */
     private fun initDaggerInjection() {
 
-        DaggerInjector.configureInjectionFor(this).inject(this)
+        DaggerInjector.configureInjectionFor(this, compositeDisposable).inject(this)
     }
 
     //MARK: -------- INITIALISATION
@@ -84,26 +93,43 @@ class FlickrActivity : AppCompatActivity(), FlickrActivityDelegate {
         Snackbar.make(window.findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show()
     }
 
-    override fun loadUntagged(flickrModelsArrayList: ArrayList<FlickrModel>, fragmentTypes: FlickrFragmentTypes) {
+    override fun loadUntagged(flickrModelsArrayList: ArrayList<FlickrModel>, fragmentTypes: FragmentType) {
 
-        if (fragmentTypes == FlickrFragmentTypes.detailed)
-
-            detailedImagesAdapter.add(flickrModelsArrayList)
+//        if (fragmentTypes == FragmentType.detailed)
+//
+//            detailedImagesAdapter.add(flickrModelsArrayList)
     }
 
     //MARK: --------- PRESENTER MESSAGES
 }
 
-enum class FlickrFragmentTypes {
+enum class FragmentType {
 
     detailed, normal
 }
 
-class FlickrPresenter(private val flickrApiHelper: FlickrApiHelper, private val delegate: FlickrActivityDelegate) {
+class FlickrPresenter(private val flickrApiHelper: FlickrApiHelper, private val delegate: FlickrActivityDelegate, private val disposable: CompositeDisposable) {
+
+    var imagesRxArrayList = RxRecyclerViewArrayList<FlickrModel>()
 
     init {
 
         onRetrieveUnTaggedImages()
+
+        initRxBusSubscription()
+    }
+
+    private fun initRxBusSubscription() {
+
+        RxBus.bus.subscribe{
+
+            when (it.type) {
+
+                EventType.retrieveMoreDetailed -> onRetrieveUnTaggedImages()
+                else -> onRetrieveUnTaggedImages()
+            }
+
+        }.addTo(disposable)
     }
 
     private fun onRetrieveUnTaggedImages() {
@@ -116,7 +142,7 @@ class FlickrPresenter(private val flickrApiHelper: FlickrApiHelper, private val 
 
     private fun onUntaggedImagesRetrieved(flickrApiResponse: FlickrApiResponse){
 
-        delegate.loadUntagged(flickrApiResponse.flickrModelsArrayList, FlickrFragmentTypes.detailed)
+        imagesRxArrayList.addAll(flickrApiResponse.flickrModelsArrayList)
     }
 
     private fun onImageRetrievalFailure(throwable: Throwable){
@@ -125,7 +151,7 @@ class FlickrPresenter(private val flickrApiHelper: FlickrApiHelper, private val 
       }
 }
 
-data class FlickrApiResponse(@SerializedName("items") val flickrModelsArrayList: ArrayList<FlickrModel>)
+data class FlickrApiResponse(@SerializedName("items") val flickrModelsArrayList: RxRecyclerViewArrayList<FlickrModel>)
 
 data class FlickrModel(val title: String,
                        val link: String,
@@ -154,16 +180,16 @@ class FlickrApiHelper {
 }
 
 interface FlickrActivityDelegate {
-    fun loadUntagged(flickrModelsArrayList: ArrayList<FlickrModel>, fragmentTypes: FlickrFragmentTypes)
+    fun loadUntagged(flickrModelsArrayList: ArrayList<FlickrModel>, fragmentTypes: FragmentType)
     fun displayAlert(message: String)
 }
 
-class FlickrTabsAdapter(fm: FragmentManager, private val titlesArray: Array<String>, private val detailedImagesRVAdapter : DetailedImagesRVAdapter): FragmentPagerAdapter(fm) {
-    
+class FlickrTabsAdapter(fm: FragmentManager, private val titlesArray: Array<String>, private val flickrRVAdapter: FlickrImagesAdapter): FragmentPagerAdapter(fm) {
+
     override fun getItem(position: Int): Fragment = when (position) {
 
-        1 -> DetailsFragmentTab.newInstance(detailedImagesRVAdapter)
-        else -> DetailsFragmentTab.newInstance(detailedImagesRVAdapter)
+        1 -> FlickrFragment.newInstance(flickrRVAdapter, FragmentType.detailed)
+        else -> FlickrFragment.newInstance(flickrRVAdapter, FragmentType.normal)
     }
 
     override fun getPageTitle(position: Int): CharSequence  = titlesArray[position]
