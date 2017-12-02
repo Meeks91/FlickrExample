@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">TigerSpikeFlickr</string>
+    <string name="flickrTitle">Flickr</string>
+    <string name="details_tab">Details</string>
+    <string name="more_of_tag">More of</string>
+    <string name="stream_tab">Stream</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="see_more_button">See more</string>
 </resources>
