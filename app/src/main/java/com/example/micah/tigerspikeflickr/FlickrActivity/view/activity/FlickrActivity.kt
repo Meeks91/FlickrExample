@@ -2,6 +2,7 @@ package com.example.micah.tigerspikeflickr.FlickrActivity.view.activity
 
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
@@ -11,6 +12,7 @@ import com.example.micah.tigerspikeflickr.EventType
 import com.example.micah.tigerspikeflickr.FlickrActivity.view.tabs.DetailedImagesRxRvAdapter
 import com.example.micah.tigerspikeflickr.FlickrActivity.view.tabs.FlickrFragment
 import com.example.micah.tigerspikeflickr.FlickrActivity.view.tabs.FlickrImagesAdapter
+import com.example.micah.tigerspikeflickr.FlickrActivity.view.tabs.TaggedImagesRxRvAdapter
 import com.example.micah.tigerspikeflickr.GlobalModels.api.ApiHelper
 import com.example.micah.tigerspikeflickr.R
 import com.example.micah.tigerspikeflickr.RxBus
@@ -26,6 +28,7 @@ import javax.inject.Inject
 
 
 class FlickrActivity : AppCompatActivity(), FlickrActivityDelegate {
+
 
     @Inject lateinit var presenter: FlickrPresenter
     private lateinit var flickrTabsAdapter: FlickrTabsAdapter
@@ -61,7 +64,8 @@ class FlickrActivity : AppCompatActivity(), FlickrActivityDelegate {
         flickrTabsAdapter = FlickrTabsAdapter(
                                 supportFragmentManager,
                                 tabsTitlesArray ,
-                                DetailedImagesRxRvAdapter(presenter.imagesRxArrayList, compositeDisposable))
+                                DetailedImagesRxRvAdapter(presenter.imagesRxArrayList, compositeDisposable),
+                                TaggedImagesRxRvAdapter(presenter.taggedImagesRxArrayList, compositeDisposable))
     }
 
     /**
@@ -73,6 +77,22 @@ class FlickrActivity : AppCompatActivity(), FlickrActivityDelegate {
         //assign adapter & flickrVP:
         tabLayout.setupWithViewPager(flickrVP)
         flickrVP.adapter = flickrTabsAdapter
+
+        tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener{
+
+            //unused
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+
+            //unused
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+
+                if (tab?.position == 1)
+
+                      presenter.onTaggedImageTabSelected()
+            }
+        })
     }
 
     /**
@@ -93,11 +113,16 @@ class FlickrActivity : AppCompatActivity(), FlickrActivityDelegate {
         Snackbar.make(window.findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show()
     }
 
-    override fun loadUntagged(flickrModelsArrayList: ArrayList<FlickrModel>, fragmentTypes: FragmentType) {
+//    override fun loadUntagged(flickrModelsArrayList: ArrayList<FlickrModel>, fragmentTypes: FragmentType) {
 
 //        if (fragmentTypes == FragmentType.detailed)
 //
 //            detailedImagesAdapter.add(flickrModelsArrayList)
+//    }
+
+    override fun selectTabAt(index: Int) {
+
+        tabLayout.getTabAt(index)?.select()
     }
 
     //MARK: --------- PRESENTER MESSAGES
@@ -105,16 +130,18 @@ class FlickrActivity : AppCompatActivity(), FlickrActivityDelegate {
 
 enum class FragmentType {
 
-    detailed, normal
+    detailed, tagged
 }
 
 class FlickrPresenter(private val flickrApiHelper: FlickrApiHelper, private val delegate: FlickrActivityDelegate, private val disposable: CompositeDisposable) {
 
     var imagesRxArrayList = RxRecyclerViewArrayList<FlickrModel>()
+    var taggedImagesRxArrayList = RxRecyclerViewArrayList<FlickrModel>()
+    lateinit var currentSearchTag: String
 
     init {
 
-        onRetrieveUnTaggedImages()
+        onRequestDetailedImages()
 
         initRxBusSubscription()
     }
@@ -125,14 +152,15 @@ class FlickrPresenter(private val flickrApiHelper: FlickrApiHelper, private val 
 
             when (it.type) {
 
-                EventType.retrieveMoreDetailed -> onRetrieveUnTaggedImages()
-                else -> onRetrieveUnTaggedImages()
+                EventType.retrieveMoreDetailed -> onRequestDetailedImages()
+                EventType.retrieveNewTag -> onRequestToRetrieveTaggedUsing(it.data as Int)
+                EventType.retrieveMoreCurrentTag -> onRequestToRetrieveMoreCurrentTag()
             }
 
         }.addTo(disposable)
     }
 
-    private fun onRetrieveUnTaggedImages() {
+    private fun onRequestDetailedImages() {
 
         flickrApiHelper
                 .getAllImages()
@@ -140,15 +168,80 @@ class FlickrPresenter(private val flickrApiHelper: FlickrApiHelper, private val 
                 .subscribe(this::onUntaggedImagesRetrieved, this::onImageRetrievalFailure)
     }
 
+    private fun onRequestToRetrieveTaggedUsing(index: Int){
+
+        //unwrap searchTag
+        val searchTag = imagesRxArrayList[index].searchTag.takeIf { it != ""}
+
+                                    //short circuit & notify user we can't find other images
+                                    ?: return delegate.displayAlert("No Tag available :(")
+
+        //store currentSearchTag
+        currentSearchTag = searchTag
+
+        //execute update:
+        flickrApiHelper
+                .getImagesWith(searchTag)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onNewTaggedImagesRetrieved, this::onImageRetrievalFailure)
+    }
+
+    private fun onRequestToRetrieveMoreCurrentTag(){
+
+        flickrApiHelper
+                .getImagesWith(currentSearchTag)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onMoreTaggedImagesRetrieved, this::onImageRetrievalFailure)
+    }
+
     private fun onUntaggedImagesRetrieved(flickrApiResponse: FlickrApiResponse){
 
         imagesRxArrayList.addAll(flickrApiResponse.flickrModelsArrayList)
     }
 
+    private fun onNewTaggedImagesRetrieved(flickrApiResponse: FlickrApiResponse){
+
+        //check if there are any tagged images
+        if (flickrApiResponse.flickrModelsArrayList.size > 0) {
+
+            //update tagged images:
+            taggedImagesRxArrayList.clear()
+            taggedImagesRxArrayList.addAll(flickrApiResponse.flickrModelsArrayList)
+
+            //go to tagged images tab
+            delegate.selectTabAt(1)
+        }
+
+        else
+
+            delegate.displayAlert("No matching tags found :(")
+    }
+
+    private fun onMoreTaggedImagesRetrieved(flickrApiResponse: FlickrApiResponse){
+
+        //check if there are any tagged images
+        if (flickrApiResponse.flickrModelsArrayList.size > 0)
+
+            taggedImagesRxArrayList.addAll(flickrApiResponse.flickrModelsArrayList)
+
+        else
+
+            delegate.displayAlert("No new images found :(")
+    }
+
+
+
     private fun onImageRetrievalFailure(throwable: Throwable){
 
          delegate.displayAlert(throwable.localizedMessage)
       }
+
+    fun onTaggedImageTabSelected() {
+
+        if (taggedImagesRxArrayList.size == 0)
+
+            delegate.displayAlert("No tagged images to show :(")
+    }
 }
 
 data class FlickrApiResponse(@SerializedName("items") val flickrModelsArrayList: RxRecyclerViewArrayList<FlickrModel>)
@@ -164,6 +257,7 @@ data class FlickrModel(val title: String,
 
     val imageUrl get() =  media.imageUrl
     val tags get() = rawTags.takeIf {it.isNotEmpty()} ?: "Default tags"
+    val searchTag get() = rawTags.substringBefore(" ", "")
 }
 
 class FlickrApiHelper {
@@ -180,16 +274,19 @@ class FlickrApiHelper {
 }
 
 interface FlickrActivityDelegate {
-    fun loadUntagged(flickrModelsArrayList: ArrayList<FlickrModel>, fragmentTypes: FragmentType)
+    fun selectTabAt(index: Int)
     fun displayAlert(message: String)
 }
 
-class FlickrTabsAdapter(fm: FragmentManager, private val titlesArray: Array<String>, private val flickrRVAdapter: FlickrImagesAdapter): FragmentPagerAdapter(fm) {
+class FlickrTabsAdapter(fm: FragmentManager,
+                        private val titlesArray: Array<String>,
+                        private val detailedImagesRxRVAdapter: FlickrImagesAdapter,
+                        private val taggedImagesRxRvAdapter: TaggedImagesRxRvAdapter): FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment = when (position) {
 
-        1 -> FlickrFragment.newInstance(flickrRVAdapter, FragmentType.detailed)
-        else -> FlickrFragment.newInstance(flickrRVAdapter, FragmentType.normal)
+        0 -> FlickrFragment.newInstance(detailedImagesRxRVAdapter, FragmentType.detailed)
+        else -> FlickrFragment.newInstance(taggedImagesRxRvAdapter, FragmentType.tagged)
     }
 
     override fun getPageTitle(position: Int): CharSequence  = titlesArray[position]

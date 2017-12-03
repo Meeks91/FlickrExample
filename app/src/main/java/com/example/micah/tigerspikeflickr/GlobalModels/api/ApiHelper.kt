@@ -69,7 +69,7 @@ object ApiHelper {
      * returns a T made using the [type]
      * and parsing the [jsonResponseString]
      */
-    private inline fun <reified T> parse(jsonResponseString: String, type: Type): T  =
+    private fun <T> parse(jsonResponseString: String, type: Type): T  =
 
           gson.fromJson(jsonResponseString, type)
 

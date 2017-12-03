@@ -14,6 +14,16 @@
         android:orientation="vertical"
         >
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:layout_constraintLeft_toLeftOf="@id/flickrImageIV"
+            app:layout_constraintRight_toRightOf="@id/flickrImageIV"
+            app:layout_constraintTop_toTopOf="@id/flickrImageIV"
+            app:layout_constraintBottom_toBottomOf="@id/flickrImageIV"
+            />
+
         <ImageView
             android:id="@+id/flickrImageIV"
             android:layout_width="0dp"
@@ -39,22 +49,12 @@
             />
 
         <TextView
-            android:id="@+id/dateTV"
-            android:layout_width="372dp"
-            android:layout_height="wrap_content"
-            android:text="Date:"
-            app:layout_constraintLeft_toLeftOf="@id/titleTV"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/titleTV"
-            android:layout_marginTop="5dp" />
-
-        <TextView
             android:id="@+id/tagsTV"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="@id/titleTV"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/dateTV"
+            app:layout_constraintTop_toBottomOf="@id/titleTV"
             android:layout_marginTop="5dp"
             android:text="Tags:"
             />

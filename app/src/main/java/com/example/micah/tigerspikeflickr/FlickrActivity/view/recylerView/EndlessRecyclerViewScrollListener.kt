@@ -1,4 +1,4 @@
-package com.example.micah.tigerspikeflickr
+package com.example.micah.tigerspikeflickr.FlickrActivity.view.recylerView
 
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager

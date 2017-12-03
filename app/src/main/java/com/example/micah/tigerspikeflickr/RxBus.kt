@@ -12,7 +12,7 @@ object RxBus {
 
 enum class EventType {
 
-    retrieveMoreDetailed, retrieveMoreTagged
+    retrieveMoreDetailed, retrieveNewTag, retrieveMoreCurrentTag
 }
 
 data class  BusEvent(val type: EventType, val data: Any)
