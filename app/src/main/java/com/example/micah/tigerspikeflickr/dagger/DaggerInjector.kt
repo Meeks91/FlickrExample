@@ -6,12 +6,19 @@ import io.reactivex.disposables.CompositeDisposable
 
 /**
  * Created by Micah on 02/12/2017.
+ * used to abstract app component building away
+ * from the injection receiving class
  */
 object DaggerInjector {
 
-    private val appComponent = DaggerAppComponent.builder()
+    private val appComponentBuilder = DaggerAppComponent.builder()
 
+    /**
+     * configures the app components to inject
+     * dependencies into the specified [flickrActivity]
+     * and returns the built AppComponent
+     */
     fun configureInjectionFor(flickrActivity: FlickrActivity, compositeDisposable: CompositeDisposable): AppComponent =
 
-        appComponent.flickrActivityModule(FlickrActivityModule(flickrActivity, compositeDisposable)).build()
+            appComponentBuilder.flickrActivityModule(FlickrActivityModule(flickrActivity, compositeDisposable)).build()
 }

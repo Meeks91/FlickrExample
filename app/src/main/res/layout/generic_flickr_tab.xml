@@ -4,4 +4,4 @@
     android:id="@+id/imagesRV"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.micah.tigerspikeflickr.FlickrActivity.view.tabs.DetailsFragmentTab"/>
+    tools:context="com.example.micah.tigerspikeflickr.FlickrActivity.view.tabFragments.DetailsFragmentTab"/>
