@@ -6,6 +6,9 @@ import android.support.v4.app.FragmentPagerAdapter
 import com.example.micah.tigerspikeflickr.FlickrActivity.view.recylerView.adapters.FlickrImagesAdapter
 import com.example.micah.tigerspikeflickr.FlickrActivity.view.recylerView.adapters.TaggedImagesRxRvAdapter
 
+/**
+ * tab adapter for the FlickrFragments
+ */
 class FlickrTabsAdapter(fm: FragmentManager,
                         private val titlesArray: Array<String>,
                         private val detailedImagesRxRVAdapter: FlickrImagesAdapter,
@@ -13,6 +16,8 @@ class FlickrTabsAdapter(fm: FragmentManager,
 
     override fun getItem(position: Int): Fragment = when (position) {
 
+        //note: the same fragment class is created but their adapter
+        //and FragmentType makes makes their layout different
         0 -> FlickrFragment.newInstance(detailedImagesRxRVAdapter, FragmentType.detailed)
         else -> FlickrFragment.newInstance(taggedImagesRxRvAdapter, FragmentType.tagged)
     }

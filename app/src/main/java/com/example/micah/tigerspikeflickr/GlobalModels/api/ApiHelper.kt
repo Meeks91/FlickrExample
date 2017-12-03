@@ -49,7 +49,9 @@ object ApiHelper {
 
                 override fun onFailure(call: Call?, e: IOException?) {
 
-                    it.onError(Throwable(e?.message ?: "An Unknown error occurred"))
+                    d(TAG, "onFailure: error is: ${e?.stackTrace.toString()} and error is: ${e?.message}")
+
+                    it.onError(Throwable("Failed to retrieve images :("))
                 }
 
                 override fun onResponse(call: Call?, response: Response?) {
@@ -69,7 +71,7 @@ object ApiHelper {
      * returns a T made using the [type]
      * and parsing the [jsonResponseString]
      */
-    private fun <T> parse(jsonResponseString: String, type: Type): T  =
+    private fun <T> parse(jsonResponseString: String, type: Type): T =
 
           gson.fromJson(jsonResponseString, type)
 
