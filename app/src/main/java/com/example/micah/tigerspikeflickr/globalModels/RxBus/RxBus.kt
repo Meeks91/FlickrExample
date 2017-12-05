@@ -1,4 +1,4 @@
-package com.example.micah.tigerspikeflickr.GlobalModels.RxBus
+package com.example.micah.tigerspikeflickr.globalModels.RxBus
 
 import io.reactivex.subjects.PublishSubject
 

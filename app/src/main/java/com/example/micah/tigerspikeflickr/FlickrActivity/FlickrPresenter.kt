@@ -5,8 +5,8 @@ import com.example.micah.tigerspikeflickr.FlickrActivity.model.api.FlickrApiDele
 import com.example.micah.tigerspikeflickr.FlickrActivity.model.dataModels.FlickrApiResponse
 import com.example.micah.tigerspikeflickr.FlickrActivity.model.dataModels.FlickrImageModel
 import com.example.micah.tigerspikeflickr.FlickrActivity.view.activity.FlickrActivityDelegate
-import com.example.micah.tigerspikeflickr.GlobalModels.RxBus.EventType
-import com.example.micah.tigerspikeflickr.GlobalModels.RxBus.RxBus
+import com.example.micah.tigerspikeflickr.globalModels.RxBus.EventType
+import com.example.micah.tigerspikeflickr.globalModels.RxBus.RxBus
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -62,6 +62,7 @@ class FlickrPresenter(private val flickrApiHelper: FlickrApiDelegate, private va
                 .getAllImages()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onUntaggedImagesRetrieved, this::onImageRetrievalFailure)
+                .addTo(cDisposable)
     }
 
     /**
@@ -87,6 +88,7 @@ class FlickrPresenter(private val flickrApiHelper: FlickrApiDelegate, private va
                 .getImagesWith(searchTag)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onNewTaggedImagesRetrieved, this::onImageRetrievalFailure)
+                .addTo(cDisposable)
     }
 
     /**
@@ -101,6 +103,7 @@ class FlickrPresenter(private val flickrApiHelper: FlickrApiDelegate, private va
                 .getImagesWith(currentSearchTag)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onMoreTaggedImagesRetrieved, this::onImageRetrievalFailure)
+                .addTo(cDisposable)
     }
 
 

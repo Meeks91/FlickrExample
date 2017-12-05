@@ -8,9 +8,9 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
-import com.example.micah.tigerspikeflickr.GlobalModels.RxBus.BusEvent
-import com.example.micah.tigerspikeflickr.GlobalModels.RxBus.EventType
-import com.example.micah.tigerspikeflickr.GlobalModels.RxBus.RxBus
+import com.example.micah.tigerspikeflickr.globalModels.RxBus.BusEvent
+import com.example.micah.tigerspikeflickr.globalModels.RxBus.EventType
+import com.example.micah.tigerspikeflickr.globalModels.RxBus.RxBus
 import com.example.micah.tigerspikeflickr.R
 
 class DetailedImageRVViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {

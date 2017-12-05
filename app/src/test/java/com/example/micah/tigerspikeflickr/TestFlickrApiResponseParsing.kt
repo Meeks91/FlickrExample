@@ -1,7 +1,7 @@
 package com.example.micah.tigerspikeflickr
 
 import com.example.micah.tigerspikeflickr.FlickrActivity.model.dataModels.FlickrApiResponse
-import com.example.micah.tigerspikeflickr.GlobalModels.api.GsonParser
+import com.example.micah.tigerspikeflickr.globalModels.api.GsonParser
 import com.example.micah.tigerspikeflickr.MockData.MockData
 import com.example.micah.tigerspikeflickr.MockData.MockData.testTagOne
 import com.example.micah.tigerspikeflickr.MockData.MockData.testTagTwo

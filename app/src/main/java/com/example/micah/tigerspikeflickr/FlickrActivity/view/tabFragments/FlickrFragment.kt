@@ -9,9 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.micah.tigerspikeflickr.FlickrActivity.view.recylerView.EndlessRecyclerViewScrollListener
 import com.example.micah.tigerspikeflickr.FlickrActivity.view.recylerView.adapters.FlickrImagesAdapter
-import com.example.micah.tigerspikeflickr.GlobalModels.RxBus.BusEvent
-import com.example.micah.tigerspikeflickr.GlobalModels.RxBus.EventType
-import com.example.micah.tigerspikeflickr.GlobalModels.RxBus.RxBus
+import com.example.micah.tigerspikeflickr.globalModels.RxBus.BusEvent
+import com.example.micah.tigerspikeflickr.globalModels.RxBus.EventType
+import com.example.micah.tigerspikeflickr.globalModels.RxBus.RxBus
 import com.example.micah.tigerspikeflickr.R
 import kotlinx.android.synthetic.main.generic_flickr_tab.*
 

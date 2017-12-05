@@ -1,7 +1,7 @@
 package com.example.micah.tigerspikeflickr.FlickrActivity.model.api
 
 import com.example.micah.tigerspikeflickr.FlickrActivity.model.dataModels.FlickrApiResponse
-import com.example.micah.tigerspikeflickr.GlobalModels.api.ApiHelper
+import com.example.micah.tigerspikeflickr.globalModels.api.ApiHelper
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Single
 
