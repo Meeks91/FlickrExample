@@ -1,7 +1,7 @@
 package com.example.micah.tigerspikeflickr.dagger.modules
 
 import com.example.micah.tigerspikeflickr.FlickrActivity.FlickrPresenter
-import com.example.micah.tigerspikeflickr.FlickrActivity.model.dataModels.api.FlickrApiHelper
+import com.example.micah.tigerspikeflickr.FlickrActivity.model.api.FlickrApiDelegate
 import com.example.micah.tigerspikeflickr.FlickrActivity.view.activity.FlickrActivityDelegate
 import dagger.Module
 import dagger.Provides
@@ -18,7 +18,8 @@ import io.reactivex.disposables.CompositeDisposable
 class  FlickrActivityModule(private val delegate: FlickrActivityDelegate, private val compositeDisposable: CompositeDisposable) {
 
     @Provides
-    fun provideFlickrPresenter(flickrApiHelper: FlickrApiHelper): FlickrPresenter =
+     fun provideFlickrPresenter(flickrApiHelper: FlickrApiDelegate): FlickrPresenter =
 
             FlickrPresenter(flickrApiHelper, delegate, compositeDisposable)
+
 }

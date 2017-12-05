@@ -18,7 +18,7 @@ import org.junit.Test
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-class TestFlickrApiResponse {
+class TestFlickrApiResponseParsing {
 
     /**
      * tests the parsed flickrResponseJson and makes

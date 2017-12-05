@@ -6,8 +6,9 @@ import io.reactivex.disposables.CompositeDisposable
 
 /**
  * Created by Micah on 02/12/2017.
+ *
  * used to abstract app component building away
- * from the injection receiving class
+ * from the FlickrActivity
  */
 object DaggerInjector {
 

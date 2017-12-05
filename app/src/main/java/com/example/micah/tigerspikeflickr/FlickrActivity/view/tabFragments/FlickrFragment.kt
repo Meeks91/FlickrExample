@@ -28,25 +28,25 @@ class FlickrFragment: Fragment() {
 
         /**
          * generates and returns an instance of the FlickrFragment
-         * using the specified [flickrRVAdapter] and [type].
-         * Note that the different tabs are the same fragment class
-         * and their different layouts rely on the fragmentType of [flickrRVAdapter]
+         * using the specified [flickrRVAdapter] and [fragmentType].
+         * Note: the different tabs are the same fragment class
+         * and their different layouts rely on their [fragmentType]
+         * and [flickrRVAdapter]
          */
-        fun newInstance(flickrRVAdapter: FlickrImagesAdapter, type: FragmentType): FlickrFragment {
+        fun newInstance(flickrRVAdapter: FlickrImagesAdapter, fragmentType: FragmentType): FlickrFragment {
 
             //create FlickrFragment
-            val detailsFragment = FlickrFragment()
+            val flickrFragment = FlickrFragment()
 
             //populate fields:
-            detailsFragment.setAdapter(flickrRVAdapter)
-            detailsFragment.fragmentType = type
+            flickrFragment.setAdapter(flickrRVAdapter)
+            flickrFragment.fragmentType = fragmentType
 
-            return detailsFragment
+            return flickrFragment
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         return inflater.inflate(R.layout.generic_flickr_tab, container, false)
     }
@@ -82,8 +82,8 @@ class FlickrFragment: Fragment() {
 
     /**
      * lazily create an instance of EndlessRecyclerViewScrollListener.
-     * It handles broacasting the event to request more images. The type
-     * of images to retrieve is determined by the global [fragmentType]
+     * It handles broadcasting the event to request more images when scrolling.
+     * The type of images to retrieve is determined by the global [fragmentType]
      */
     private val scrollListener by lazy { object : EndlessRecyclerViewScrollListener(imagesRV.layoutManager as StaggeredGridLayoutManager) {
 

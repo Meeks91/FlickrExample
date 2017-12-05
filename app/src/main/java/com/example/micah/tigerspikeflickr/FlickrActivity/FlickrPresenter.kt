@@ -1,9 +1,9 @@
 package com.example.micah.tigerspikeflickr.FlickrActivity
 
 import com.example.micah.rxRecyclerViewArrayListAdaper.RxRecyclerViewArrayList
+import com.example.micah.tigerspikeflickr.FlickrActivity.model.api.FlickrApiDelegate
 import com.example.micah.tigerspikeflickr.FlickrActivity.model.dataModels.FlickrApiResponse
 import com.example.micah.tigerspikeflickr.FlickrActivity.model.dataModels.FlickrImageModel
-import com.example.micah.tigerspikeflickr.FlickrActivity.model.dataModels.api.FlickrApiHelper
 import com.example.micah.tigerspikeflickr.FlickrActivity.view.activity.FlickrActivityDelegate
 import com.example.micah.tigerspikeflickr.GlobalModels.RxBus.EventType
 import com.example.micah.tigerspikeflickr.GlobalModels.RxBus.RxBus
@@ -14,9 +14,9 @@ import io.reactivex.rxkotlin.addTo
 /**
  * Created by Micah on 02/12/2017.
  */
-class FlickrPresenter(private val flickrApiHelper: FlickrApiHelper, private val delegate: FlickrActivityDelegate, private val disposable: CompositeDisposable) {
+class FlickrPresenter(private val flickrApiHelper: FlickrApiDelegate, private val delegate: FlickrActivityDelegate, private val cDisposable: CompositeDisposable) {
 
-    var imagesRxArrayList = RxRecyclerViewArrayList<FlickrImageModel>()
+    var unTaggedImagesRxArrayList = RxRecyclerViewArrayList<FlickrImageModel>()
     var taggedImagesRxArrayList = RxRecyclerViewArrayList<FlickrImageModel>()
     private lateinit var currentSearchTag: String
 
@@ -31,7 +31,7 @@ class FlickrPresenter(private val flickrApiHelper: FlickrApiHelper, private val 
 
     /**
      * inits the RxBus subscription to
-     * receieve retrieve more image events
+     * receive 'retrieve more images' events
      */
     private fun initRxBusSubscription() {
 
@@ -44,7 +44,7 @@ class FlickrPresenter(private val flickrApiHelper: FlickrApiHelper, private val 
                 EventType.retrieveMoreCurrentTag -> onRequestToRetrieveMoreCurrentTag()
             }
 
-        }.addTo(disposable)
+        }.addTo(cDisposable)
     }
 
     //MARK: ---------- INITIALISATION
@@ -67,14 +67,14 @@ class FlickrPresenter(private val flickrApiHelper: FlickrApiHelper, private val 
     /**
      * handles: retrieving tagged images from the Flickr API. The tag
      * is determined by the flickrImageModel at the specified [index] of
-     * the imagesRxArrayList. If this model has no tag then the delegate
+     * the unTaggedImagesRxArrayList. If this model has no tag then the delegate
      * is notified and method returns. The API response is routed to the
      * appropriate response handler.
      */
     private fun onRequestRetrieveTaggedImagesUsing(index: Int){
 
         //unwrap searchTag
-        val searchTag = imagesRxArrayList[index].searchTag.takeIf {it != ""}
+        val searchTag = unTaggedImagesRxArrayList[index].searchTag.takeIf {it != ""}
 
                 //short circuit & notify user we can't find other images
                 ?: return delegate.displayAlert("No Tag available :(")
@@ -112,12 +112,12 @@ class FlickrPresenter(private val flickrApiHelper: FlickrApiHelper, private val 
     /**
      * handles: adding all of the images in the specified
      * [flickrApiResponse.flickrModelsArrayLis] to the
-     * global [imagesRxArrayList] which automaticlly updates the
+     * global [unTaggedImagesRxArrayList] which automaticlly updates the
      * detailed images RecyclerView
      */
     private fun onUntaggedImagesRetrieved(flickrApiResponse: FlickrApiResponse){
 
-        imagesRxArrayList.addAll(flickrApiResponse.flickrModelsArrayList)
+        unTaggedImagesRxArrayList.addAll(flickrApiResponse.flickrModelsArrayList)
     }
 
     /**

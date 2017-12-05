@@ -1,13 +1,12 @@
-package com.example.micah.tigerspikeflickr.MockData
+package com.example.micah.tigerspikeflickr
 
-import com.example.micah.tigerspikeflickr.FlickrActivity.model.dataModels.api.FlickrApiHelper
+import com.example.micah.tigerspikeflickr.FlickrActivity.model.api.FlickrApiHelper
 import org.junit.Assert
 import org.junit.Test
 
 /**
  * Created by Micah on 03/12/2017.
  */
-
 
 class TestRealApiCalls {
 
@@ -17,7 +16,9 @@ class TestRealApiCalls {
     private var taggedApiCallErrorMessage = ""
 
     /**
-     * tests real API call for getting images
+     * tests real API call for getting images.
+     * Will return true if there is at least one
+     * available FlickrImageModel retrieved
      */
     @Test
     fun testAllImagesApiCall() {
@@ -32,11 +33,14 @@ class TestRealApiCalls {
 
         Thread.sleep(2000)
 
+        //ensure there is at least one image
         Assert.assertTrue("testAllImagesApiCall no images returned and error is: ${detailedApiCallErrorMessage}", foundDetailedImagesCount > 0)
     }
 
     /**
-     * tests real API call for getting tagged images
+     * tests real API call for getting tagged images.
+     * Will return true if there is at least one
+     * available FlickrImageModel retrieved
      */
     @Test
     fun testTaggedImagesApiCall() {
@@ -51,6 +55,7 @@ class TestRealApiCalls {
 
         Thread.sleep(2000)
 
+        //ensure there is at least one image
         Assert.assertTrue("testTaggedImagesApiCall no images returned and error is: ${taggedApiCallErrorMessage}", foundTaggedImagesCount > 0)
     }
 }
