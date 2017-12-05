@@ -1,4 +1,4 @@
-package com.example.micah.tigerspikeflickr.GlobalModels.api
+package com.example.micah.tigerspikeflickr.globalModels.api
 
 import com.google.gson.Gson
 import java.lang.reflect.Type

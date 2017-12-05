@@ -1,4 +1,4 @@
-package com.example.micah.tigerspikeflickr.GlobalModels.api
+package com.example.micah.tigerspikeflickr.globalModels.api
 
 import android.util.Log.d
 import io.reactivex.Single
