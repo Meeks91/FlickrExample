@@ -3,8 +3,8 @@ package com.example.micah.tigerspikeflickr.FlickrActivity.model.dataModels
 import com.google.gson.annotations.SerializedName
 
 /**
- * models of the images returned by Flickr from the
- * public feed endoint
+ * model of the images returned by Flickr
+ * from the public feed endpoint
  */
 data class FlickrImageModel(val title: String,
                             val link: String,
@@ -17,5 +17,5 @@ data class FlickrImageModel(val title: String,
 
     val imageUrl get() =  media.imageUrl
     val tags get() = rawTags.takeIf {it.isNotEmpty()} ?: "Default tags"
-    val searchTag get() = rawTags.substringBefore(" ", "")
+    val searchTag get() = rawTags.substringBefore(" ", tags)
 }

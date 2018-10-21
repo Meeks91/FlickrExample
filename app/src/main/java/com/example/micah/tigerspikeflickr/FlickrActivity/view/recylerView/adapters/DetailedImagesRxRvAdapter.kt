@@ -19,7 +19,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 
 /**
- * implements the RxRecyclerViewArrayList based for the detailed images tab
+ * implements the RxRecyclerViewArrayList and imagesRV for the detailed images tab
  */
 class DetailedImagesRxRvAdapter(private val imagesRxArrayList: RxRecyclerViewArrayList<FlickrImageModel>, private val compositeDisposable: CompositeDisposable): FlickrImagesAdapter(compositeDisposable){
 

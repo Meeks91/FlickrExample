@@ -1,4 +1,4 @@
-package com.example.micah.tigerspikeflickr.GlobalModels.RxBus
+package com.example.micah.tigerspikeflickr.globalModels.RxBus
 
 /**
  * holder for different bus events. The [type]

@@ -8,9 +8,9 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
-import com.example.micah.tigerspikeflickr.GlobalModels.RxBus.BusEvent
-import com.example.micah.tigerspikeflickr.GlobalModels.RxBus.EventType
-import com.example.micah.tigerspikeflickr.GlobalModels.RxBus.RxBus
+import com.example.micah.tigerspikeflickr.globalModels.RxBus.BusEvent
+import com.example.micah.tigerspikeflickr.globalModels.RxBus.EventType
+import com.example.micah.tigerspikeflickr.globalModels.RxBus.RxBus
 import com.example.micah.tigerspikeflickr.R
 
 class DetailedImageRVViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -27,12 +27,11 @@ class DetailedImageRVViewHolder(itemView: View): RecyclerView.ViewHolder(itemVie
 
     /**
      * handles: broadcasting request to retrieve
-     * images with a new tag from the Flickr API
+     * more images with the model at this index's tag
      */
     @OnClick((R.id.seeMoreButton))
      fun onClick() {
 
-        //include adapterPosition to retrieve the model at this index's tag
         RxBus.bus.onNext(BusEvent((EventType.retrieveNewTag), adapterPosition))
     }
 }

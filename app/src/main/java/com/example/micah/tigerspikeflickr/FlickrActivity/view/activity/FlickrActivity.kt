@@ -19,7 +19,7 @@ class FlickrActivity : AppCompatActivity(), FlickrActivityDelegate {
 
     @Inject lateinit var presenter: FlickrPresenter
     private lateinit var flickrTabsAdapter: FlickrTabsAdapter
-    private val compositeDisposable = CompositeDisposable()
+    private val cDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +32,6 @@ class FlickrActivity : AppCompatActivity(), FlickrActivityDelegate {
         initTabLayout()
     }
 
-
     //MARK: -------- INITIALISATION
 
     /**
@@ -41,7 +40,7 @@ class FlickrActivity : AppCompatActivity(), FlickrActivityDelegate {
      */
     private fun initDaggerInjection() {
 
-        DaggerInjector.configureInjectionFor(this, compositeDisposable).inject(this)
+        DaggerInjector.configureInjectionFor(this, cDisposable).inject(this)
     }
 
     /**
@@ -54,8 +53,8 @@ class FlickrActivity : AppCompatActivity(), FlickrActivityDelegate {
         flickrTabsAdapter = FlickrTabsAdapter(
                 supportFragmentManager,
                 tabsTitlesArray,
-                DetailedImagesRxRvAdapter(presenter.imagesRxArrayList, compositeDisposable),
-                TaggedImagesRxRvAdapter(presenter.taggedImagesRxArrayList, compositeDisposable))
+                DetailedImagesRxRvAdapter(presenter.unTaggedImagesRxArrayList, cDisposable),
+                TaggedImagesRxRvAdapter(presenter.taggedImagesRxArrayList, cDisposable))
     }
 
     /**
@@ -119,13 +118,13 @@ class FlickrActivity : AppCompatActivity(), FlickrActivityDelegate {
 
     //MARK: --------- PRESENTER UPDATES
 
-    //MARK: --------- LIFE CYCLE
+    //MARK: --------- LIFECYCLE
 
     override fun onDestroy() {
         super.onDestroy()
 
-        compositeDisposable.clear()
+        cDisposable.clear()
     }
 
-    //MARK: --------- LIFE CYCLE
+    //MARK: --------- LIFECYCLE
 }

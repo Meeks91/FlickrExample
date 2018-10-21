@@ -6,8 +6,7 @@ import com.bumptech.glide.request.RequestOptions
 import io.reactivex.disposables.CompositeDisposable
 
 /**
- * a base class to allow a generic object which implements
- * RxRecyclerViewArrayList based adapter binding
+ * a base class for RxRecyclerViewArrayList based adapters
  */
 abstract class FlickrImagesAdapter(private val compositeDisposable: CompositeDisposable) {
 

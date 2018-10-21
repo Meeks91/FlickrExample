@@ -1,9 +1,9 @@
-package com.example.micah.tigerspikeflickr.GlobalModels.api
+package com.example.micah.tigerspikeflickr.globalModels.api
 
 import com.google.gson.Gson
 import java.lang.reflect.Type
 
-object GsonParser{
+object GsonParser {
 
     private val gson = Gson()
 
@@ -14,5 +14,4 @@ object GsonParser{
      fun <T> parse(jsonResponseString: String, type: Type): T =
 
             gson.fromJson(jsonResponseString, type)
-
 }
