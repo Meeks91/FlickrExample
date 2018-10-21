@@ -1,7 +1,6 @@
 package com.example.micah.tigerspikeflickr.GlobalModels.api
 
 import android.util.Log.d
-import com.google.gson.Gson
 import io.reactivex.Single
 import okhttp3.*
 import java.io.IOException
@@ -16,7 +15,6 @@ object ApiHelper {
     private val TAG = ApiHelper::class.java.simpleName
     private val baseFlickrApiURL = "https://api.flickr.com/services/feeds/photos_public.gne?format=json&nojsoncallback=1"
     private val okHttpClient = OkHttpClient()
-    private val gson = Gson()
 
     /**
      * Makes a request to the Flickr API using the specified parameters.
@@ -61,19 +59,11 @@ object ApiHelper {
                     d(TAG, "jsonResponseString is: $jsonResponseString")
 
                     //parse and return response
-                    it.onSuccess(parse<T>(jsonResponseString, type))
+                    it.onSuccess(GsonParser.parse<T>(jsonResponseString, type))
                 }
             })
         }
     }
-
-    /**
-     * returns a T made using the [type]
-     * and parsing the [jsonResponseString]
-     */
-    private fun <T> parse(jsonResponseString: String, type: Type): T =
-
-          gson.fromJson(jsonResponseString, type)
 
     /**
      * generates and returns a GET Request object
